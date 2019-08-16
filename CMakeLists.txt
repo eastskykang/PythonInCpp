@@ -1,12 +1,19 @@
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 3.13)
 project (tfbench)
 
-# interpreter path
-# TODO no hard coding!
-set(PYTHON_EXECUTABLE /home/donghok/anaconda3/envs/tf-benchmark/bin/python)
-set(PYTHON_INCLUDE_DIR /home/donghok/anaconda3/envs/tf-benchmark/include/python3.7m)
-set(PYTHON_LIBRARY /home/donghok/anaconda3/envs/tf-benchmark/lib/libpython3.7m.so)
+# python path
+set(Python_ROOT_DIR /home/donghok/anaconda3/envs/tf-benchmark)
 
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+
+message(STATUS ${Python_EXECUTABLE})
+message(STATUS ${Python_INCLUDE_DIRS})
+message(STATUS ${Python_LIBRARIES})
+
+set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
+set(PYTHON_INCLUDE_DIR ${Python_INCLUDE_DIRS})
+set(PYTHON_LIBRARY ${Python_LIBRARIES})
+#
 # pybind
 add_subdirectory(pybind11)
 # or
