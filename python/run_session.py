@@ -14,11 +14,11 @@ def build_network():
     h = tf.tanh(network.linear_custom(input, 'fc1', n_hidden=128, histogram=True))
     h = tf.tanh(network.linear_custom(h, 'fc2', n_hidden=128, histogram=True))
 
-    return h
+    return input, h
 
 
 def run_session():
-    h = build_network()
+    input, h = build_network()
 
     init_all_op = tf.global_variables_initializer()
 
@@ -35,3 +35,7 @@ def run_session():
 
         end = time.time()
         print(end - start)
+
+
+if __name__ == '__main__':
+    run_session()
