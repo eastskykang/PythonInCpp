@@ -1,0 +1,8 @@
+[submodule "deps/pybind11"]
+	path = deps/pybind11
+	url = https://github.com/pybind/pybind11.git
+	branch = e43e1cc01ae6d4e4e5ba10557a057d7f3d5ece0d
+[submodule "deps/yaml-cpp"]
+	path = deps/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
+	branch = 562aefc114938e388457e6a531ed7b54d9dc1b62
