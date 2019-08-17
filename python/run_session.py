@@ -4,15 +4,18 @@ import numpy as np
 import time
 
 batch_size = 32
-input_shape = 128
+input_shape = 1024
+layers = [1024, 1024]
 
 num_samples = 100
+
 
 # mlp
 def build_network():
     input = tf.placeholder(tf.float32, shape=(batch_size, input_shape))
-    h = tf.tanh(network.linear_custom(input, 'fc1', n_hidden=128, histogram=True))
-    h = tf.tanh(network.linear_custom(h, 'fc2', n_hidden=128, histogram=True))
+
+    for i, layer in enumerate(layers):
+        h = tf.tanh(network.linear_custom(input, 'fc{}'.format(i), n_hidden=layer, histogram=True))
 
     return input, h
 
