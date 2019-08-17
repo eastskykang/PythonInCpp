@@ -6,4 +6,4 @@
 
 ## flags
 
-- ```-DPython_ROOT_DIR=<YOUR PYTHON3 INTERPRETER PATH>``` 
+- ```-DPython3_ROOT_DIR=<YOUR PYTHON3 INTERPRETER PATH>``` 
