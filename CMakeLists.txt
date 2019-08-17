@@ -10,8 +10,8 @@ set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
 set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
 set(PYTHON_LIBRARY ${Python3_LIBRARY})
 
-# pybind
-add_subdirectory(pybind11)
+# dependencies
+add_subdirectory(deps)
 # find_package(pybind11 REQUIRED)
 
 # python code
