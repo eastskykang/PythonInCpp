@@ -11,13 +11,17 @@ set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
 set(PYTHON_LIBRARY ${Python3_LIBRARY})
 
 # dependencies
+find_package(Eigen3 REQUIRED NO_MODULE)
+
 add_subdirectory(deps)
-# find_package(pybind11 REQUIRED)
 
 # python code
 add_subdirectory(python)
 
 # executable
 add_executable(test src/test.cpp)
-target_link_libraries(test PRIVATE pybind11::embed yaml-cpp)
+target_link_libraries(test PRIVATE
+        pybind11::embed
+        yaml-cpp
+        Eigen3::Eigen)
 target_include_directories(test PUBLIC ${CMAKE_BINARY_DIR}/python)

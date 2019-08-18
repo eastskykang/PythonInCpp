@@ -1,5 +1,5 @@
 tests:
-  - tag: fc-test1
+  - tag: cpu-fc-test1
     device: /cpu:0
     layers:
       - type: fc
@@ -10,3 +10,15 @@ tests:
         activation: tanh
     batch: 32
     input: 128
+    step: 1
+#  - tag: gpu-fc-test1
+#    device: /device:GPU:0
+#    layers:
+#      - type: fc
+#        size: 128
+#        activation: tanh
+#      - type: fc
+#        size: 128
+#        activation: tanh
+#    batch: 32
+#    input: 128

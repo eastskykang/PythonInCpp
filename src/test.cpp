@@ -4,7 +4,9 @@
 #include <iostream>
 #include <pybind11/embed.h>
 #include <pybind11/stl_bind.h>
+#include <pybind11/eigen.h>
 #include <yaml-cpp/yaml.h>
+#include <Eigen/Dense>
 #include "python.h"
 
 namespace py = pybind11;
@@ -61,8 +63,17 @@ int main() {
     auto test = Test(layerSpecs, batchSize, inputSize, device);
 
     // run test
+    int numStep = testSpec["step"].as<int>();
     auto run = test.attr("run");
-    run();
+
+    for (int i = 0; i < numStep; i++) {
+      Eigen::MatrixXd inputEigen = Eigen::MatrixXd::Random(batchSize, inputSize);
+      run(inputEigen);
+    }
+
+    // close test
+    auto close = test.attr("close");
+    close();
   }
 
 //  func();
