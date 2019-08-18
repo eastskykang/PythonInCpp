@@ -7,6 +7,7 @@
 #include <pybind11/eigen.h>
 #include <yaml-cpp/yaml.h>
 #include <Eigen/Dense>
+#include <ctime>
 #include "python.h"
 
 namespace py = pybind11;
@@ -30,6 +31,9 @@ int main() {
   // test spec
   for (auto it = testSpecs.begin(); it != testSpecs.end(); it++) {
     auto testSpec = *it;
+
+    // tag
+    auto tag = testSpec["tag"].as<std::string>();
 
     // device
     auto device = testSpec["device"].as<std::string>();
@@ -66,10 +70,24 @@ int main() {
     int numStep = testSpec["step"].as<int>();
     auto run = test.attr("run");
 
+    std::clock_t start;
+    double duration;
+
+    // timer start
+    start = std::clock();
+
     for (int i = 0; i < numStep; i++) {
       Eigen::MatrixXd inputEigen = Eigen::MatrixXd::Random(batchSize, inputSize);
       run(inputEigen);
     }
+
+    // timer tick
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+
+    // log
+    std::cout << "tag: " << tag << std::endl;
+    std::cout << "step: " << numStep << std::endl;
+    std::cout << "elapsed time: " << duration << std::endl;
 
     // close test
     auto close = test.attr("close");

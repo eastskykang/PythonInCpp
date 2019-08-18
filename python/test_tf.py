@@ -1,7 +1,8 @@
 import tensorflow as tf
-import network
 import numpy as np
+import yaml
 import time
+import network
 
 num_samples = 100
 
@@ -57,27 +58,45 @@ class Test:
         return input, h
 
     def run(self, input):
-
-        print(input)
-
-        start = time.time()
-
         out = self.sess.run([self.output], feed_dict={
             self.input: input
         })
-
-        end = time.time()
-        print(end - start)
 
     def close(self):
         self.sess.close()
         tf.reset_default_graph()
 
 
-# if __name__ == '__main__':
-#
-#     test = Test()
-#     test.run(np.random.rand(self.batch_size, self.input_shape))
-#     test.close()
+if __name__ == '__main__':
+
+    with open("/home/donghok/git/tfbench/yaml/test.yaml", 'r') as stream:
+        try:
+            config = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+        test_specs = config['tests']
+
+        for test_spec in test_specs:
+
+            tag = test_spec['tag']
+            device = test_spec['device']
+            batch_size = test_spec['batch']
+            input_size = test_spec['input']
+            layers = test_spec['layers']
+            num_steps = test_spec['step']
+
+            test = Test(layers, batch_size, input_size, device)
+
+            start = time.time()
+            for _ in range(num_steps):
+                test.run(np.random.rand(batch_size, input_size))
+            end = time.time()
+
+            print('tag: {}'.format(tag))
+            print('step: {}'.format(num_steps))
+            print('elapsed time: {}'.format(end-start))
+
+            test.close()
 
 

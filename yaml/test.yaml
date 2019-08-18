@@ -1,5 +1,18 @@
 tests:
-  - tag: cpu-fc-test1
+  - tag: cpu-fc
+    device: /cpu:0
+    layers:
+      - type: fc
+        size: 128
+        activation: tanh
+      - type: fc
+        size: 128
+        activation: tanh
+    batch: 32
+    input: 128
+    step: 1000
+
+  - tag: cpu-fc-step1
     device: /cpu:0
     layers:
       - type: fc
@@ -11,6 +24,46 @@ tests:
     batch: 32
     input: 128
     step: 1
+
+  - tag: cpu-fc-step10
+    device: /cpu:0
+    layers:
+      - type: fc
+        size: 128
+        activation: tanh
+      - type: fc
+        size: 128
+        activation: tanh
+    batch: 32
+    input: 128
+    step: 10
+
+  - tag: cpu-fc-step100
+    device: /cpu:0
+    layers:
+      - type: fc
+        size: 128
+        activation: tanh
+      - type: fc
+        size: 128
+        activation: tanh
+    batch: 32
+    input: 128
+    step: 100
+
+  - tag: cpu-fc-step1000
+    device: /cpu:0
+    layers:
+      - type: fc
+        size: 128
+        activation: tanh
+      - type: fc
+        size: 128
+        activation: tanh
+    batch: 32
+    input: 128
+    step: 1000
+
 #  - tag: gpu-fc-test1
 #    device: /device:GPU:0
 #    layers:
