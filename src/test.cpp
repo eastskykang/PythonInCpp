@@ -14,17 +14,22 @@
 namespace py = pybind11;
 namespace po = boost::program_options;
 
+using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
+
 int main(int argc, const char *argv[]) {
 
   // parse arguments
-  std::string yaml_path;
+  std::string yamlPath;
+  bool loopTime = false;
 
   try
   {
     po::options_description desc{"Allowed options"};
     desc.add_options()
         ("help,h", "Help screen")
-        ("yaml_path,p", po::value<std::string>(&yaml_path)->required(), "Test configuration yaml path");
+        ("yaml_path,p", po::value<std::string>(&yamlPath)->required(), "Test configuration yaml path");
+        ("loop_time,l", "Log loop timer");
 
     po::variables_map vm;
     store(parse_command_line(argc, argv, desc), vm);
@@ -34,6 +39,8 @@ int main(int argc, const char *argv[]) {
       std::cout << desc << '\n';
       return 0;
     }
+
+    loopTime = vm.count("loop_time");
   }
   catch (const po::error &ex)
   {
@@ -52,7 +59,7 @@ int main(int argc, const char *argv[]) {
   auto Test = py::module::import("test_tf").attr("Test");
 
   // load yaml
-  YAML::Node config = YAML::LoadFile(yaml_path);
+  YAML::Node config = YAML::LoadFile(yamlPath);
   const YAML::Node &testSpecs = config["tests"];
 
   // test spec
@@ -60,16 +67,20 @@ int main(int argc, const char *argv[]) {
     auto testSpec = *it;
 
     // tag
-    auto tag = testSpec["tag"].as<std::string>();
+    const auto tag = testSpec["tag"].as<std::string>();
 
     // device
-    auto device = testSpec["device"].as<std::string>();
+    const auto device = testSpec["device"].as<std::string>();
+
+    // thread
+    const int intraThread = testSpec["intraThread"].as<int>();
+    const int interThread = testSpec["interThread"].as<int>();
 
     // batch size
-    int batchSize = testSpec["batch"].as<int>();
+    const int batchSize = testSpec["batch"].as<int>();
 
     // input size
-    int inputSize = testSpec["input"].as<int>();
+    const int inputSize = testSpec["input"].as<int>();
 
     // network layer
     auto layerSpecs = py::list();
@@ -91,7 +102,7 @@ int main(int argc, const char *argv[]) {
     }
 
     // create test
-    auto test = Test(layerSpecs, batchSize, inputSize, device);
+    auto test = Test(layerSpecs, batchSize, inputSize, device, intraThread, interThread);
 
     // run test
     int numStep = testSpec["step"].as<int>();
@@ -99,24 +110,37 @@ int main(int argc, const char *argv[]) {
 
     // input matrix
     Eigen::MatrixXd input = Eigen::MatrixXd::Random(batchSize, inputSize);
+//    RowMatrixXd input = Eigen::MatrixXd::Random(batchSize, inputSize);
 
     std::clock_t start;
     double duration;
 
-    // timer start
+    std::clock_t loop_clock;
+    std::vector<double> loop_durations;
+    loop_durations.reserve(numStep);
+
+    // timer tic
     start = std::clock();
 
     for (int i = 0; i < numStep; i++) {
+      loop_clock = std::clock();
       auto out = run(input);
+      loop_durations.push_back(( std::clock() - loop_clock ) / (double) CLOCKS_PER_SEC);
     }
 
-    // timer tick
+    // timer toc
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
     // log
     std::cout << "tag         : " << tag << std::endl;
     std::cout << "step        : " << numStep << std::endl;
     std::cout << "elapsed time: " << duration << std::endl;
+
+    if (loopTime) {
+      std::cout << "loop time   : " << std::endl;
+      for (int i = 0; i < loop_durations.size(); i++)
+        std::cout << loop_durations[i] << std::endl;
+    }
 
     // close test
     auto close = test.attr("close");

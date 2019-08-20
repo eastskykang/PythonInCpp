@@ -8,16 +8,18 @@ num_samples = 100
 
 
 class Test:
-    def __init__(self, layers, batch_size, input_shape, device='/cpu:0'):
+    def __init__(self, layers, batch_size, input_shape, device='/cpu:0', intra_thread=0, inter_thread=0):
         """
-        - layers is list of dict
+        - layers: list of dict
         e.g.
             [
                 {'type': 'fc', 'size': '128', 'activation':'tanh'},
                 {'type': 'fc', 'size': '256', 'activation':'tanh'},
             ]
-        - batch_size is int
-        - input_shape is int
+        - batch_size: int
+        - input_shape: int
+        - intra_thread: Nodes that can use multiple threads to parallelize their execution will schedule the individual pieces into this pool.
+        - inter_thread: All ready nodes are scheduled in this pool.
         """
         self.batch_size = batch_size
         self.input_shape = input_shape
@@ -31,10 +33,17 @@ class Test:
         # session
         config = tf.ConfigProto(allow_soft_placement=True)
         config.gpu_options.allow_growth = True
+        config.intra_op_parallelism_threads = intra_thread
+        config.inter_op_parallelism_threads = inter_thread
         self.sess = tf.Session(config=config)
 
         # initialize network
         self.sess.run(init_all_op)
+
+        # run with dummy (for warm up)
+        self.sess.run([self.output], feed_dict={
+            self.input: np.random.rand(batch_size, input_shape)
+        })
 
     def build_network(self, layers, batch_size, input_shape):
         input = tf.placeholder(tf.float32, shape=(batch_size, input_shape))
@@ -56,6 +65,8 @@ class Test:
                 h = tf.tanh(h)
             elif layer_activation == 'relu':
                 h = tf.nn.relu(h)
+            elif layer_activation == 'none':
+                pass
             else:
                 raise NotImplemented
 

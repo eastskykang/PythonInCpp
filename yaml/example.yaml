@@ -1,130 +1,39 @@
+# network size from Hwangbo, Jemin, et al. "Learning agile and dynamic motor skills for legged robots." Science Robotics 4.26 (2019)
+# https://robotics.sciencemag.org/content/4/26/eaau5872.abstract
+
 tests:
-  - tag: cpu-fc-dummy
+  - tag: cpu-fc
     device: /cpu:0
+    intraThread: 0
+    interThread: 0
     layers:
       - type: fc
-        size: 128
+        size: 256
         activation: tanh
       - type: fc
         size: 128
         activation: tanh
-    batch: 32
-    input: 128
-    step: 1000
-
-  - tag: cpu-fc-step1
-    device: /cpu:0
-    layers:
       - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
+        size: 12
+        activation: none
+    batch: 1
+    input: 97
     step: 1
 
-  - tag: cpu-fc-step10
-    device: /cpu:0
-    layers:
-      - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
-    step: 10
-
-  - tag: cpu-fc-step100
-    device: /cpu:0
-    layers:
-      - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
-    step: 100
-
-  - tag: cpu-fc-step1000
-    device: /cpu:0
-    layers:
-      - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
-    step: 1000
-
-  - tag: gpu-fc-dummy
+  - tag: gpu-fc
     device: /device:GPU:0
+    intraThread: 0
+    interThread: 0
     layers:
       - type: fc
-        size: 128
+        size: 256
         activation: tanh
       - type: fc
         size: 128
         activation: tanh
-    batch: 32
-    input: 128
-    step: 1000
-
-  - tag: gpu-fc-step1
-    device: /device:GPU:0
-    layers:
       - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
+        size: 12
+        activation: none
+    batch: 1
+    input: 97
     step: 1
-
-  - tag: gpu-fc-step10
-    device: /device:GPU:0
-    layers:
-      - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
-    step: 10
-
-  - tag: gpu-fc-step100
-    device: /device:GPU:0
-    layers:
-      - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
-    step: 100
-
-  - tag: gpu-fc-step1000
-    device: /device:GPU:0
-    layers:
-      - type: fc
-        size: 128
-        activation: tanh
-      - type: fc
-        size: 128
-        activation: tanh
-    batch: 32
-    input: 128
-    step: 1000
