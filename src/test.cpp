@@ -7,12 +7,39 @@
 #include <pybind11/eigen.h>
 #include <yaml-cpp/yaml.h>
 #include <Eigen/Dense>
+#include <boost/program_options.hpp>
 #include <ctime>
 #include "python.h"
 
 namespace py = pybind11;
+namespace po = boost::program_options;
 
-int main() {
+int main(int argc, const char *argv[]) {
+
+  // parse arguments
+  std::string yaml_path;
+
+  try
+  {
+    po::options_description desc{"Allowed options"};
+    desc.add_options()
+        ("help,h", "Help screen")
+        ("yaml_path,p", po::value<std::string>(&yaml_path)->required(), "Test configuration yaml path");
+
+    po::variables_map vm;
+    store(parse_command_line(argc, argv, desc), vm);
+    notify(vm);
+
+    if (vm.count("help")) {
+      std::cout << desc << '\n';
+      return 0;
+    }
+  }
+  catch (const po::error &ex)
+  {
+    std::cerr << ex.what() << '\n';
+    return -1;
+  }
 
   // start the interpreter and keep it alive
   py::scoped_interpreter guard{};
@@ -25,7 +52,7 @@ int main() {
   auto Test = py::module::import("test_tf").attr("Test");
 
   // load yaml
-  YAML::Node config = YAML::LoadFile("/home/donghok/git/tfbench/yaml/test.yaml");
+  YAML::Node config = YAML::LoadFile(yaml_path);
   const YAML::Node &testSpecs = config["tests"];
 
   // test spec

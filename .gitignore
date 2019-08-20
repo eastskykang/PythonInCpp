@@ -9,3 +9,7 @@ __pycache__
 # build
 build
 cmake-build-*
+
+
+# cfg
+yaml/
