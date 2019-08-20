@@ -70,6 +70,9 @@ int main() {
     int numStep = testSpec["step"].as<int>();
     auto run = test.attr("run");
 
+    // input matrix
+    Eigen::MatrixXd input = Eigen::MatrixXd::Random(batchSize, inputSize);
+
     std::clock_t start;
     double duration;
 
@@ -77,16 +80,15 @@ int main() {
     start = std::clock();
 
     for (int i = 0; i < numStep; i++) {
-      Eigen::MatrixXd inputEigen = Eigen::MatrixXd::Random(batchSize, inputSize);
-      run(inputEigen);
+      auto out = run(input);
     }
 
     // timer tick
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
     // log
-    std::cout << "tag: " << tag << std::endl;
-    std::cout << "step: " << numStep << std::endl;
+    std::cout << "tag         : " << tag << std::endl;
+    std::cout << "step        : " << numStep << std::endl;
     std::cout << "elapsed time: " << duration << std::endl;
 
     // close test

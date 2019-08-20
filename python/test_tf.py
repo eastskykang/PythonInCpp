@@ -27,7 +27,11 @@ class Test:
             self.input, self.output = self.build_network(layers, batch_size, input_shape)
 
         init_all_op = tf.global_variables_initializer()
-        self.sess = tf.Session()
+
+        # session
+        config = tf.ConfigProto(allow_soft_placement=True)
+        config.gpu_options.allow_growth = True
+        self.sess = tf.Session(config=config)
 
         # initialize network
         self.sess.run(init_all_op)
@@ -58,7 +62,7 @@ class Test:
         return input, h
 
     def run(self, input):
-        out = self.sess.run([self.output], feed_dict={
+        return self.sess.run([self.output], feed_dict={
             self.input: input
         })
 
@@ -88,14 +92,16 @@ if __name__ == '__main__':
 
             test = Test(layers, batch_size, input_size, device)
 
+            input = np.random.rand(batch_size, input_size)
+
             start = time.time()
             for _ in range(num_steps):
-                test.run(np.random.rand(batch_size, input_size))
+                output = test.run(input)
             end = time.time()
 
-            print('tag: {}'.format(tag))
-            print('step: {}'.format(num_steps))
-            print('elapsed time: {}'.format(end-start))
+            print('tag          : {}'.format(tag))
+            print('step         : {}'.format(num_steps))
+            print('elapsed time : {}'.format(end-start))
 
             test.close()
 
