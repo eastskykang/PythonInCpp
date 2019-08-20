@@ -21,8 +21,13 @@ $ sudo apt-get install libeigen3-dev
 $ conda env create -n <ENV NAME> python=3.5
 $ conda activate <ENV NAME>
 ```
-- Install tensorflow from source. 
-    - [Follow instruction here.](https://www.tensorflow.org/install/source)  
+- Install tensorflow  
+```bash
+# option1: GPU
+$ pip install tensorflow-gpu
+# option2: CPU
+$ pip install tensorflow-gpu  
+```
 - Build by cmake 
 ```bash
 $ mkdir build && cd build 
