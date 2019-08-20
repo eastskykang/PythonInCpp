@@ -29,6 +29,9 @@ $ mkdir build && cd build
 $ cmake ../ ```-DPython3_ROOT_DIR=<YOUR PYTHON3 INTERPRETER PATH>```
 ```
 - Run test
+```bash
+$ ./test --yaml_path=<YOUR TEST CONFIGURATION YAML PATH> 
+```
 
 
 <!---
