@@ -2,6 +2,7 @@
 // Created by donghok on 16.08.19.
 //
 #include <iostream>
+#include <fstream>
 #include <pybind11/embed.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/eigen.h>
@@ -9,6 +10,9 @@
 #include <Eigen/Dense>
 #include <boost/program_options.hpp>
 #include <ctime>
+#include <bits/stdc++.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "python.h"
 
 namespace py = pybind11;
@@ -22,14 +26,16 @@ int main(int argc, const char *argv[]) {
   // parse arguments
   std::string yamlPath;
   bool loopTime = false;
+  bool csv = false;
 
   try
   {
     po::options_description desc{"Allowed options"};
     desc.add_options()
         ("help,h", "Help screen")
-        ("yaml_path,p", po::value<std::string>(&yamlPath)->required(), "Test configuration yaml path");
-        ("loop_time,l", "Log loop timer");
+        ("yaml_path,p", po::value<std::string>(&yamlPath)->required(), "Test configuration yaml path")
+        ("loop_time,l", "Log loop timer")
+        ("csv,c", "Create .csv file");
 
     po::variables_map vm;
     store(parse_command_line(argc, argv, desc), vm);
@@ -41,6 +47,7 @@ int main(int argc, const char *argv[]) {
     }
 
     loopTime = vm.count("loop_time");
+    csv = vm.count("csv");
   }
   catch (const po::error &ex)
   {
@@ -61,6 +68,19 @@ int main(int argc, const char *argv[]) {
   // load yaml
   YAML::Node config = YAML::LoadFile(yamlPath);
   const YAML::Node &testSpecs = config["tests"];
+
+  // csv
+  std::ofstream csvfile;
+  if (csv) {
+
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%d-%m-%H-%M-%S.csv");
+
+    csvfile.open(oss.str());
+    csvfile << "tag, step, elapsed time,\n";
+  }
 
   // test spec
   for (auto it = testSpecs.begin(); it != testSpecs.end(); it++) {
@@ -134,6 +154,8 @@ int main(int argc, const char *argv[]) {
     // log
     std::cout << "tag         : " << tag << std::endl;
     std::cout << "step        : " << numStep << std::endl;
+    std::cout << "intra thread: " << intraThread << std::endl;
+    std::cout << "inter thread: " << interThread << std::endl;
     std::cout << "elapsed time: " << duration << std::endl;
 
     if (loopTime) {
@@ -142,11 +164,17 @@ int main(int argc, const char *argv[]) {
         std::cout << loop_durations[i] << std::endl;
     }
 
+    if (csv) {
+      csvfile << tag << "," << numStep << "," << duration << ",\n";
+    }
+
     // close test
     auto close = test.attr("close");
     close();
   }
 
-//  func();
+  if (csv) {
+    csvfile.close();
+  }
 
 }
