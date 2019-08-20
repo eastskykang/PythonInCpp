@@ -6,7 +6,8 @@
     - python >= 3.5
     - tensorflow == 1.14.0
 - C++
-    - eigen3
+    - Boost
+    - Eigen3
 
 ## Steps
 
