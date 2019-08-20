@@ -73,7 +73,7 @@ class Test:
         return input, h
 
     def run(self, input):
-        return self.sess.run([self.output], feed_dict={
+        return self.sess.run(self.output, feed_dict={
             self.input: input
         })
 
